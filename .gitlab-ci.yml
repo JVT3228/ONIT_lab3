@@ -1,0 +1,28 @@
+stages:
+- check
+- test
+- build
+- deploy
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  DOCKER_IMAGE: $CI_REGISTRY_IMAGE
+  DOCKER_TAG: $CI_COMMIT_SHORT_SHA
+
+
+# Не запускаем дублирующие пайплайны на push + MR
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGEREQUESTS
+      when: never
+    - if: $CI_COMMIT_BRANCH
+
+# ================================================== CHECK ==================================================
+check:
+  stage: check
+  image: python:3.11-slim
+  script:
+    - pip
+
+# ================================================== TEST ==================================================
